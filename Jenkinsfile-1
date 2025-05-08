@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Majidied/SonarQube_practice.git'
+                git 'https://github.com/IhabHilal/SonarQube_practice.git'
             }
         }
 

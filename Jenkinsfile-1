@@ -1,18 +1,33 @@
 pipeline {
-  agent any
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  stages {
-    stage('Scan') {
-      steps {
-        script{
-          sh 'chmod +x ./mvnw'
-          withSonarQubeEnv(installationName: 'Sq1'){
-          sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-        }
-        }
-      }
+    agent any
+
+    tools {
+        maven 'Maven 3.8.6'  // Assure-toi que Maven est bien installé dans Jenkins avec ce nom
     }
-  }
+
+    environment {
+        SONARQUBE = 'SonarQube' // Le nom que tu as donné à ton serveur SonarQube dans Jenkins
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Majidied/SonarQube_practice.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE}") {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=sqp_d98a3b317fa26319b3185f64a585b58823c15d4d'
+                }
+            }
+        }
+    }
 }
